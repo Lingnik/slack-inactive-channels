@@ -36,10 +36,10 @@ workspace. This requires owner or admin permissions, depending on your workspace
 7. Click the big green **Next** button.
 8. Click the big green **Create** button.
 9. Click the big white **Install to <workspace name>** button.
-10. Click the big green `Allow` button. Totally safe. Definitely not giving access to untrusted random code you got on the internet to view all of your Slack workspace's channel history and channel information.
+10. Click the big green **Allow** button. Totally safe. Definitely not giving access to untrusted random code you got on the internet to view all of your Slack workspace's channel history and channel information.
 11. Click the **_OAuth &amp; Permissions_** link in the sidebar.
-12. Note the `User OAuth Token` starting with `xoxp-` -- you'll need to copy and paste this into an environment variable in your terminal this later. The token will let you run the script on the workspace you installed it on.
-13. That's it for the Slack API site. See the [Script Prerequisites] and [Script Usage] sections below for next steps.
+12. Note the **User OAuth Token** starting with `xoxp-` -- you'll need to copy and paste this into an environment variable in your terminal this later. The token will let you run the script on the workspace you installed it on.
+13. That's it for the Slack API site. See the [Script Prerequisites](#script-prerequisites) and [Script Usage](#script-usage) sections below for next steps.
 
 
 ## Script Prerequisites
