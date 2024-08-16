@@ -12,6 +12,7 @@ workspace. This requires owner or admin permissions, depending on your workspace
 5. Click the big green **Next** button.
 6. Paste the following code into the form:
 
+    ```json
     {
         "display_information": {
             "name": "slack-inactive-channels"
@@ -30,6 +31,7 @@ workspace. This requires owner or admin permissions, depending on your workspace
             "token_rotation_enabled": false
         }
     }
+    ```
 
 7. Click the big green **Next** button.
 8. Click the big green **Create** button.
@@ -42,7 +44,7 @@ workspace. This requires owner or admin permissions, depending on your workspace
 
 ## Script Prerequisites
 
-```
+```sh
 brew update
 brew install pyenv pyenv-virtualenv
 export PYENV_ROOT="$HOME/.pyenv"
@@ -53,7 +55,7 @@ eval "$(pyenv virtualenv-init -)"
 
 
 ## Script Usage
-```
+```sh
 pyenv install 3.12.2
 pyenv virtualenv 3.12.2 slack-inactive-channels-3.12.2
 pyenv activate slack-inactive-channels-3.12.2
