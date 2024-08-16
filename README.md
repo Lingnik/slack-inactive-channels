@@ -59,6 +59,7 @@ eval "$(pyenv virtualenv-init -)"
 pyenv install 3.12.2
 pyenv virtualenv 3.12.2 slack-inactive-channels-3.12.2
 pyenv activate slack-inactive-channels-3.12.2
+pip install -r requirements.txt
 
 # Did you know that if you preface a command with a space in zsh, and have `hist_ignore_space` turned on, then the
 # command won't show up in ~/.zsh_history?
