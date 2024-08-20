@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import datetime
 import os
+import time
 
 import requests
 from dateutil.parser import parse as parse_date
@@ -8,6 +9,26 @@ from dateutil.parser import parse as parse_date
 # Get Slack API token and other settings from environment variables
 SLACK_API_TOKEN = os.getenv("SLACK_API_TOKEN")
 DEFAULT_INACTIVE_DAYS = int(os.getenv("DEFAULT_INACTIVE_DAYS", 90))
+
+
+def slack_get_request(url, headers, params, retries=5, backoff_factor=2):
+    """Make a GET request to the Slack API, handling rate limit errors."""
+    for attempt in range(retries):
+        response = requests.get(url, headers=headers, params=params)
+        data = response.json()
+
+        if data.get("ok"):
+            return data
+        
+        if data.get("error") == "ratelimited":
+            retry_after = int(response.headers.get("Retry-After", 1))
+            wait_time = backoff_factor ** attempt * retry_after
+            print(f"Rate limit hit. Retrying in {wait_time} seconds...")
+            time.sleep(wait_time)
+        else:
+            raise Exception(f"Error making request to Slack API: {data['error']}")
+    
+    raise Exception("Exceeded maximum retries due to rate limit errors.")
 
 
 def get_channels():
@@ -18,11 +39,7 @@ def get_channels():
 
     channels = []
     while True:
-        response = requests.get(url, headers=headers, params=params)
-        data = response.json()
-
-        if not data["ok"]:
-            raise Exception(f"Error fetching channels: {data['error']}")
+        data = slack_get_request(url, headers, params)
 
         channels.extend(data["channels"])
 
@@ -40,11 +57,7 @@ def get_channel_last_activity(channel_id):
     headers = {"Authorization": f"Bearer {SLACK_API_TOKEN}"}
     params = {"channel": channel_id, "limit": 1}
 
-    response = requests.get(url, headers=headers, params=params)
-    data = response.json()
-
-    if not data["ok"]:
-        raise Exception(f"Error fetching channel history: {data['error']}")
+	data = slack_get_request(url, headers, params)
 
     messages = data["messages"]
     if not messages:
