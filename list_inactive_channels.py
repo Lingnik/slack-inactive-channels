@@ -77,10 +77,18 @@ ERROR_NOT_IN_CHANNEL = "not_in_channel"
 # Default channel exclusions
 DEFAULT_EXCLUDE_CHANNELS = {"general", "random", "announcements"}
 
+# Load environment variables from .env file if it exists
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    # dotenv not installed, continue without it
+    pass
+
 # Get Slack API token and other settings from environment variables
 SLACK_API_TOKEN = os.getenv("SLACK_API_TOKEN")
 if not SLACK_API_TOKEN:
-    raise ValueError("SLACK_API_TOKEN environment variable is required")
+    raise ValueError("SLACK_API_TOKEN environment variable is required. Set it in your environment or create a .env file.")
 
 # Check for and remove any non-ASCII characters in the token
 SLACK_API_TOKEN = SLACK_API_TOKEN.encode('ascii', 'ignore').decode('ascii')
