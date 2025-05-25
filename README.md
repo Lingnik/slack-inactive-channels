@@ -10,6 +10,10 @@ A Python utility to identify inactive channels in a Slack workspace. This helps 
 - Handles rate limiting with exponential backoff
 - Shows channel creation date and member count in results
 - Configurable inactivity threshold
+- Export results to CSV, JSON, and interactive HTML formats
+- Test mode for checking first 100 channels only
+- Single channel analysis mode
+- Optional channel archiving functionality
 - Logs channel access errors to a file (slack_errors.log)
 
 ## Slack App Setup
@@ -34,8 +38,11 @@ workspace. This requires owner or admin permissions, depending on your workspace
                 "user": [
                     "channels:read",
                     "channels:history",
+                    "channels:join",
+                    "channels:write",
                     "groups:read",
-                    "groups:history"
+                    "groups:history",
+                    "groups:write"
                 ]
             }
         },
@@ -115,9 +122,11 @@ Available arguments:
 
 - `--days DAYS` - Number of days to consider a channel inactive
 - `--exclude CHANNELS` - Comma-separated list of channel names to exclude
-- `--export FILENAME` - Export results to CSV, JSON, and HTML files with this base name
+- `--export FILENAME` - Export results to CSV, JSON, and HTML files with this base name (saved to `data/` directory)
 - `--archive` - Archive inactive channels (requires confirmation)
 - `--no-interactive` - Run in non-interactive mode (requires --days and --export)
+- `--channel CHANNEL_NAME` - Check data for only one specific channel
+- `--test` - Test mode: only check the first 100 channels
 
 #### Automating with Non-Interactive Mode
 
@@ -125,6 +134,22 @@ For scheduled tasks or automated reporting:
 
 ```sh
 python3 ./list_inactive_channels.py --days 90 --export "inactive-report-$(date +%Y-%m-%d)" --no-interactive
+```
+
+#### Testing Mode
+
+Use test mode to quickly check the first 100 channels:
+
+```sh
+python3 ./list_inactive_channels.py --test --days 90 --export test-report
+```
+
+#### Single Channel Analysis
+
+Check activity for a specific channel:
+
+```sh
+python3 ./list_inactive_channels.py --channel "engineering-team" --days 30
 ```
 
 #### Archiving Inactive Channels
@@ -155,18 +180,18 @@ Found 15 channels inactive for 60 days or more:
 
 Do you want to export the results to files? (y/n): y
 Enter base filename without extension (default: inactive_channels): 
-Exported 15 inactive channels to inactive_channels.csv
-Exported complete channel data to inactive_channels.json
-Exported HTML report to inactive_channels.html
+Exported 15 inactive channels to data/inactive_channels.csv
+Exported complete channel data to data/inactive_channels.json
+Exported HTML report to data/inactive_channels.html
 ```
 
 ## Export Features
 
-The tool can now export inactive channel data to multiple formats:
+The tool exports inactive channel data to multiple formats in the `data/` directory:
 
-- CSV file: Contains key channel information in a tabular format
-- JSON file: Contains complete channel data for more detailed analysis
-- HTML report: Interactive formatted table with channel details
+- **CSV file**: Contains key channel information in a tabular format
+- **JSON file**: Contains complete channel data for more detailed analysis  
+- **HTML report**: Interactive, searchable, sortable table with beautiful styling
 
 Exported data is sorted by last activity date (oldest inactive channels first) and includes:
 - Channel ID and name
@@ -177,10 +202,27 @@ Exported data is sorted by last activity date (oldest inactive channels first) a
 - Private channel status
 - Channel topic and purpose
 
-### HTML Export
+### Interactive HTML Report
 
-The HTML export creates a nicely formatted report with:
-- Report summary (date, inactivity threshold, total channels)
-- Interactive table with color coding
-- Sortable columns
-- Mobile-friendly responsive design
+The HTML export creates a professional, interactive dashboard with:
+- **Beautiful design**: Modern Slack-branded styling with gradient backgrounds
+- **Search functionality**: Real-time search across channel names, topics, and purposes
+- **Sortable columns**: Click any column header to sort (with visual indicators)
+- **Color-coded data**: Days inactive shown in red/orange/green based on severity
+- **Responsive design**: Works perfectly on desktop and mobile devices
+- **Private channel badges**: Clear visual indicators for private channels
+- **Summary statistics**: Key metrics displayed prominently at the top
+
+## Required Slack API Scopes
+
+Based on the API endpoints used, the script requires these Slack OAuth scopes:
+
+- `channels:read` - List and read public channel information
+- `channels:history` - Read message history from public channels
+- `channels:join` - Join public channels (when bot is not a member)
+- `channels:write` - Archive public channels (when using --archive)
+- `groups:read` - List and read private channel information  
+- `groups:history` - Read message history from private channels
+- `groups:write` - Archive private channels (when using --archive)
+
+These scopes are included in the Slack app manifest provided in the setup instructions.
